@@ -1,5 +1,11 @@
-#Config File example
-save_dir: workspace/nanodet_m
+# nanodet-plus-m-1.5x_320
+# COCO mAP(0.5:0.95) = 0.299
+#             AP_50  = 0.454
+#             AP_75  = 0.312
+#           AP_small = 0.102
+#               AP_m = 0.309
+#               AP_l = 0.493
+save_dir: workspace/nanodet-plus-m-1.5x_320
 model:
   weight_averager:
     name: ExpMovingAverager
@@ -9,22 +15,22 @@ model:
     detach_epoch: 10
     backbone:
       name: ShuffleNetV2
-      model_size: 1.0x
+      model_size: 1.5x
       out_stages: [2,3,4]
       activation: LeakyReLU
     fpn:
       name: GhostPAN
-      in_channels: [116, 232, 464]
-      out_channels: 96
+      in_channels: [176, 352, 704]
+      out_channels: 128
       kernel_size: 5
       num_extra_level: 1
       use_depthwise: True
       activation: LeakyReLU
     head:
       name: NanoDetPlusHead
-      num_classes: 8
-      input_channel: 96
-      feat_channels: 96
+      num_classes: 6
+      input_channel: 128
+      feat_channels: 128
       stacked_convs: 2
       kernel_size: 5
       strides: [8, 16, 32, 64]
@@ -47,50 +53,47 @@ model:
     # Auxiliary head, only use in training time.
     aux_head:
       name: SimpleConvHead
-      num_classes: 8
-      input_channel: 192
-      feat_channels: 192
+      num_classes: 6
+      input_channel: 256
+      feat_channels: 256
       stacked_convs: 4
       strides: [8, 16, 32, 64]
       activation: LeakyReLU
       reg_max: 7
-
-class_names: &class_names ["box","package","parcel","plastic_bag","amazon","envelope","amazon_package","person"]  #Please fill in the category names (not include background category)
 data:
   train:
-    name: XMLDataset
-    class_names: *class_names
-    img_path: /home/zeyu/package_project/data_train/  #Please fill in train image path
-    ann_path: /home/zeyu/package_project/ana_train/  #Please fill in train xml path
+    name: CocoDataset
+    img_path: /
+    ann_path: /home/zeyu/Autodet/ann_dict_train.json
     input_size: [320,320] #[w,h]
-    keep_ratio: True
+    keep_ratio: False
     pipeline:
       perspective: 0.0
       scale: [0.6, 1.4]
-      stretch: [[1, 1], [1, 1]]
+      stretch: [[0.8, 1.2], [0.8, 1.2]]
       rotation: 0
       shear: 0
       translate: 0.2
       flip: 0.5
       brightness: 0.2
-      contrast: [0.8, 1.2]
-      saturation: [0.8, 1.2]
+      contrast: [0.6, 1.4]
+      saturation: [0.5, 1.2]
       normalize: [[103.53, 116.28, 123.675], [57.375, 57.12, 58.395]]
   val:
-    name: XMLDataset
-    class_names: *class_names
-    img_path: /home/zeyu/package_project/data_val/  #Please fill in val image path
-    ann_path: /home/zeyu/package_project/ana_val/  #Please fill in val xml path
+    name: CocoDataset
+    img_path: /
+    ann_path: /home/zeyu/Autodet/ann_dict_val.json
     input_size: [320,320] #[w,h]
-    keep_ratio: True
+    keep_ratio: False
     pipeline:
       normalize: [[103.53, 116.28, 123.675], [57.375, 57.12, 58.395]]
 device:
-  gpu_ids: [0,1,2,3,4,5] # Set like [0, 1, 2, 3] if you have multi-GPUs
-  workers_per_gpu: 8
-  batchsize_per_gpu: 64
+  gpu_ids: [0,1,2,3,4,5,6]
+  workers_per_gpu: 10
+  batchsize_per_gpu: 80
 schedule:
-  load_model: ./nanodet-plus-m_320_checkpoint.ckpt
+#  resume:
+#  load_model:
   optimizer:
     name: AdamW
     lr: 0.001
@@ -109,6 +112,7 @@ grad_clip: 35
 evaluator:
   name: CocoDetectionEvaluator
   save_key: mAP
-
 log:
-  interval: 10
+  interval: 50
+
+class_names: ["box","envelope","package","person","car","plastic_bag"]

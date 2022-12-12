@@ -24,6 +24,7 @@ def parse_args():
     parser.add_argument("--config", help="model config file path")
     parser.add_argument("--model", help="model file path")
     parser.add_argument("--path", default="./demo", help="path to images or video")
+    parser.add_argument("--output", default="./demo")
     parser.add_argument("--camid", type=int, default=0, help="webcam demo camera id")
     parser.add_argument(
         "--save_result",
@@ -96,6 +97,7 @@ def main():
     local_rank = 0
     torch.backends.cudnn.enabled = True
     torch.backends.cudnn.benchmark = True
+    print("start")
 
     load_config(cfg, args.config)
     logger = Logger(local_rank, use_tensorboard=False)
@@ -113,7 +115,7 @@ def main():
             result_image = predictor.visualize(res[0], meta, cfg.class_names, 0.35)
             if args.save_result:
                 save_folder = os.path.join(
-                    cfg.save_dir, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
+                    args.output, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
                 )
                 mkdir(local_rank, save_folder)
                 save_file_name = os.path.join(save_folder, os.path.basename(image_name))
@@ -127,7 +129,7 @@ def main():
         height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)  # float
         fps = cap.get(cv2.CAP_PROP_FPS)
         save_folder = os.path.join(
-            cfg.save_dir, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
+            args.output, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
         )
         mkdir(local_rank, save_folder)
         save_path = (

@@ -124,7 +124,8 @@ class CocoDataset(BaseDataset):
         """
         img_info = self.get_per_img_info(idx)
         file_name = img_info["file_name"]
-        image_path = os.path.join(self.img_path, file_name)
+#         image_path = os.path.join(self.img_path, file_name)
+        image_path = file_name
         img = cv2.imread(image_path)
         if img is None:
             print("image {} read failed.".format(image_path))

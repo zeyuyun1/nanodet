@@ -9,22 +9,22 @@ model:
     detach_epoch: 10
     backbone:
       name: ShuffleNetV2
-      model_size: 1.0x
+      model_size: 1.5x
       out_stages: [2,3,4]
       activation: LeakyReLU
     fpn:
       name: GhostPAN
-      in_channels: [116, 232, 464]
-      out_channels: 96
+      in_channels: [176, 352, 704]
+      out_channels: 128
       kernel_size: 5
       num_extra_level: 1
       use_depthwise: True
       activation: LeakyReLU
     head:
       name: NanoDetPlusHead
-      num_classes: 8
-      input_channel: 96
-      feat_channels: 96
+      num_classes: 7
+      input_channel: 128
+      feat_channels: 128
       stacked_convs: 2
       kernel_size: 5
       strides: [8, 16, 32, 64]
@@ -47,21 +47,21 @@ model:
     # Auxiliary head, only use in training time.
     aux_head:
       name: SimpleConvHead
-      num_classes: 8
-      input_channel: 192
-      feat_channels: 192
+      num_classes: 7
+      input_channel: 256
+      feat_channels: 256
       stacked_convs: 4
       strides: [8, 16, 32, 64]
       activation: LeakyReLU
       reg_max: 7
 
-class_names: &class_names ["box","package","parcel","plastic_bag","amazon","envelope","amazon_package","person"]  #Please fill in the category names (not include background category)
+class_names: &class_names ["box","envelope","package","person","monitor","car","tree"]  #Please fill in the category names (not include background category)
 data:
   train:
     name: XMLDataset
     class_names: *class_names
-    img_path: /home/zeyu/package_project/data_train/  #Please fill in train image path
-    ann_path: /home/zeyu/package_project/ana_train/  #Please fill in train xml path
+    img_path: /home/zeyu/brute_force/data_train/  #Please fill in train image path
+    ann_path: /home/zeyu/brute_force/ana_train/  #Please fill in train xml path
     input_size: [320,320] #[w,h]
     keep_ratio: True
     pipeline:
@@ -79,18 +79,18 @@ data:
   val:
     name: XMLDataset
     class_names: *class_names
-    img_path: /home/zeyu/package_project/data_val/  #Please fill in val image path
-    ann_path: /home/zeyu/package_project/ana_val/  #Please fill in val xml path
+    img_path: /home/zeyu/brute_force/data_val/  #Please fill in val image path
+    ann_path: /home/zeyu/brute_force/ana_val/  #Please fill in val xml path
     input_size: [320,320] #[w,h]
     keep_ratio: True
     pipeline:
       normalize: [[103.53, 116.28, 123.675], [57.375, 57.12, 58.395]]
 device:
-  gpu_ids: [0,1,2,3,4,5] # Set like [0, 1, 2, 3] if you have multi-GPUs
+  gpu_ids: [0,1,2,3,4,5,6] # Set like [0, 1, 2, 3] if you have multi-GPUs
   workers_per_gpu: 8
   batchsize_per_gpu: 64
 schedule:
-  load_model: ./nanodet-plus-m_320_checkpoint.ckpt
+  load_model: ./nanodet-plus-m-1.5x_320_checkpoint.ckpt
   optimizer:
     name: AdamW
     lr: 0.001

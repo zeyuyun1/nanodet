@@ -70,9 +70,7 @@ def main(args):
     logger.info("Setting up data...")
     train_dataset = build_dataset(cfg.data.train, "train")
     val_dataset = build_dataset(cfg.data.val, "test")
-
     evaluator = build_evaluator(cfg.evaluator, val_dataset)
-
     train_dataloader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=cfg.device.batchsize_per_gpu,
@@ -82,6 +80,7 @@ def main(args):
         collate_fn=naive_collate,
         drop_last=True,
     )
+    
     val_dataloader = torch.utils.data.DataLoader(
         val_dataset,
         batch_size=cfg.device.batchsize_per_gpu,
@@ -89,9 +88,9 @@ def main(args):
         num_workers=cfg.device.workers_per_gpu,
         pin_memory=True,
         collate_fn=naive_collate,
-        drop_last=False,
+        drop_last=True,
     )
-
+    
     logger.info("Creating model...")
     task = TrainingTask(cfg, evaluator)
 

@@ -26,16 +26,20 @@ def build_dataset(cfg, mode):
         warnings.warn(
             "Dataset name coco has been deprecated. Please use CocoDataset instead."
         )
+        print('coco')
         return CocoDataset(mode=mode, **dataset_cfg)
     elif name == "xml_dataset":
         warnings.warn(
             "Dataset name xml_dataset has been deprecated. "
             "Please use XMLDataset instead."
         )
+        print('xml')
         return XMLDataset(mode=mode, **dataset_cfg)
     elif name == "CocoDataset":
+        print('coco')
         return CocoDataset(mode=mode, **dataset_cfg)
     elif name == "XMLDataset":
+        print('xml')
         return XMLDataset(mode=mode, **dataset_cfg)
     else:
         raise NotImplementedError("Unknown dataset type!")

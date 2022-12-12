@@ -9,13 +9,13 @@ model:
     detach_epoch: 10
     backbone:
       name: ShuffleNetV2
-      model_size: 1.0x
+      model_size: 1.5x
       out_stages: [2,3,4]
       activation: LeakyReLU
     fpn:
       name: GhostPAN
-      in_channels: [116, 232, 464]
-      out_channels: 96
+      in_channels: [176, 352, 704]
+      out_channels: 128
       kernel_size: 5
       num_extra_level: 1
       use_depthwise: True
@@ -23,8 +23,8 @@ model:
     head:
       name: NanoDetPlusHead
       num_classes: 8
-      input_channel: 96
-      feat_channels: 96
+      input_channel: 128
+      feat_channels: 128
       stacked_convs: 2
       kernel_size: 5
       strides: [8, 16, 32, 64]
@@ -48,8 +48,8 @@ model:
     aux_head:
       name: SimpleConvHead
       num_classes: 8
-      input_channel: 192
-      feat_channels: 192
+      input_channel: 256
+      feat_channels: 256
       stacked_convs: 4
       strides: [8, 16, 32, 64]
       activation: LeakyReLU
@@ -86,11 +86,11 @@ data:
     pipeline:
       normalize: [[103.53, 116.28, 123.675], [57.375, 57.12, 58.395]]
 device:
-  gpu_ids: [0,1,2,3,4,5] # Set like [0, 1, 2, 3] if you have multi-GPUs
+  gpu_ids: [0,1,2,3] # Set like [0, 1, 2, 3] if you have multi-GPUs
   workers_per_gpu: 8
   batchsize_per_gpu: 64
 schedule:
-  load_model: ./nanodet-plus-m_320_checkpoint.ckpt
+  load_model: ./nanodet-plus-m-1.5x_320_checkpoint.ckpt
   optimizer:
     name: AdamW
     lr: 0.001
